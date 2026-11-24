@@ -1,0 +1,5 @@
+analysis/*.json
+generated/
+re-output/
+references/
+__pycache__/
