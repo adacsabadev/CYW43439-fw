@@ -3,3 +3,4 @@ generated/
 re-output/
 references/
 __pycache__/
+hardware-test/build/

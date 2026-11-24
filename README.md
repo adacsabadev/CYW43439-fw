@@ -67,3 +67,26 @@ manifests and ARM Thumb listings using `arm-none-eabi-objdump`. Configuration
 segments and the executable patch at `0x000d0200` remain separate so a reverse
 engineering tool can load each at its real address without filling the large
 address gaps.
+
+## Independent Pico 2 W hardware test
+
+`hardware-test/` is a clean diagnostic image independent of the dongle code.
+It boots with the stock Pico SDK `.0065` Bluetooth patch, exposes USB CDC,
+initializes CYW43439, sends a raw HCI Reset and requires the matching Command
+Complete event before reporting `HCI_RESET PASS`.
+
+```powershell
+cd .\hardware-test
+.\build.ps1
+```
+
+Serial commands:
+
+- `status`: radio initialization and last HCI event
+- `hci-reset`: repeat the controller reset probe
+- `led-on`, `led-off`: verify the CYW43-controlled onboard LED
+- `bootsel`: reboot into ROM USB BOOTSEL without using the physical button
+
+The firmware prints `CYW43439 PICO2W TEST v1` and a status line every five
+seconds. A working board must report both `CYW43_INIT PASS` and
+`HCI_RESET PASS`; USB enumeration alone proves only the RP2350/flash/USB path.
