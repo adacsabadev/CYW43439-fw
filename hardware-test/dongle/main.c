@@ -6,6 +6,7 @@
 
 #include "bsp/board.h"
 #include "cyw43.h"
+#include "cybt_shared_bus_driver.h"
 #include "pico/bootrom.h"
 #include "pico/cyw43_arch.h"
 #include "pico/stdlib.h"
@@ -57,6 +58,8 @@ static absolute_time_t activity_led_ready;
 static uint32_t command_rx, command_tx, acl_host_rx, acl_host_tx;
 static uint32_t event_rx, event_tx, acl_device_rx, acl_device_tx;
 static uint32_t drops, controller_errors;
+static uint32_t backpressure;
+static bool controller_stalled;
 static uint32_t event_histogram[256];
 
 bool btstack_cyw43_init(async_context_t *context) {
@@ -95,6 +98,8 @@ static void print_status(void) {
              (unsigned long)event_rx, (unsigned long)event_tx,
              (unsigned long)acl_device_rx, (unsigned long)acl_device_tx,
              (unsigned long)drops, (unsigned long)controller_errors);
+    log_line("FLOW backpressure=%lu host_cmd_q=%u host_acl_q=%u dev_evt_q=%u dev_acl_q=%u",
+             (unsigned long)backpressure, hc_count, ha_count, de_count, da_count);
 }
 
 void tud_mount_cb(void) {
@@ -184,28 +189,41 @@ static int controller_write(uint8_t type, const uint8_t *payload, uint16_t lengt
     return cyw43_bluetooth_hci_write(buffer, HCI_HEADER_SIZE + length);
 }
 
+/*
+ * Returns true when the queue head should be released. A full controller
+ * ring keeps the packet queued for retry; any other error drops it so one bad
+ * packet cannot stall the bridge. backpressure counts stall episodes, not
+ * individual retries.
+ */
+static bool controller_write_result(int result) {
+    if (result == CYBT_ERR_QUEUE_FULL) {
+        if (!controller_stalled) backpressure++;
+        controller_stalled = true;
+        return false;
+    }
+    controller_stalled = false;
+    if (result != 0) controller_errors++;
+    return true;
+}
+
 static void send_host_queues(void) {
     if (hc_count) {
         command_packet_t *packet = &host_commands[hc_out];
         int result = controller_write(HCI_COMMAND, packet->data, packet->length);
-        if (result == 0) {
+        if (controller_write_result(result)) {
             hc_out = (uint8_t)((hc_out + 1) % HOST_COMMAND_QUEUE);
             hc_count--;
-            command_tx++;
-        } else {
-            controller_errors++;
+            if (result == 0) command_tx++;
         }
         return;
     }
     if (ha_count) {
         acl_packet_t *packet = &host_acl[ha_out];
         int result = controller_write(HCI_ACL, packet->data, packet->length);
-        if (result == 0) {
+        if (controller_write_result(result)) {
             ha_out = (uint8_t)((ha_out + 1) % HOST_ACL_QUEUE);
             ha_count--;
-            acl_host_tx++;
-        } else {
-            controller_errors++;
+            if (result == 0) acl_host_tx++;
         }
     }
 }

@@ -39,6 +39,12 @@ foreach ($required in @(
     if (-not (Test-Path -LiteralPath $required)) { throw "Missing required local tool: $required" }
 }
 
+$CybtSource = Join-Path $SdkPath 'src\rp2_common\pico_cyw43_driver\cybt_shared_bus\cybt_shared_bus.c'
+if (-not (Select-String -LiteralPath $CybtSource -SimpleMatch -Quiet `
+        'cybt_result_t result = cybt_hci_write_buf(buf, size);')) {
+    throw "Pico SDK lacks patches\pico-sdk-cybt-propagate-write-errors.patch: $CybtSource"
+}
+
 $env:PATH = (Split-Path -Parent $PioasmPath) + ';' + $env:PATH
 cmake -S $ProjectRoot -B $BuildDir -G Ninja `
     -DPICO_SDK_PATH="$SdkPath" `

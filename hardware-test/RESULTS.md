@@ -73,3 +73,23 @@ Final UF2:
 SHA-256:
 
 `EDE1E710D87DAD657C1AC0451C9D8F8FB209030210CACCF748479630903570CA`
+
+### Backpressure build (SDK write-error patch)
+
+Rebuilt against the patched Pico SDK 2.3.1 so controller write failures
+are reported. The bridge now retries on `CYBT_ERR_QUEUE_FULL` and drops on
+other errors. Re-enumerated with the Generic Bluetooth Adapter and both
+Microsoft enumerators Status OK on COM17. A 15-second A2DP stream to the RACE
+TX10 finished with:
+
+```text
+STATUS radio=OK usb=1 cmd=72/72 acl_host=760/760 evt=476/476 acl_dev=56/56 drops=0 errors=0
+FLOW backpressure=0 host_cmd_q=0 host_acl_q=0 dev_evt_q=0 dev_acl_q=0
+```
+
+UF2: `build/dongle-stock-0065/cyw43439_usb_dongle.uf2` (the earlier image
+remains in `build/dongle-stock-0065.pre-backpressure/`)
+
+SHA-256:
+
+`5FCF37645BB391533F08F33FC9B071F965DB5CADFFB34CDEAFEEBED91FEA04FD`

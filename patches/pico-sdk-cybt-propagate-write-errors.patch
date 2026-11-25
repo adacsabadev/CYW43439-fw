@@ -1,0 +1,17 @@
+diff --git a/src/rp2_common/pico_cyw43_driver/cybt_shared_bus/cybt_shared_bus.c b/src/rp2_common/pico_cyw43_driver/cybt_shared_bus/cybt_shared_bus.c
+index f256f0e..8f5d288 100644
+--- a/src/rp2_common/pico_cyw43_driver/cybt_shared_bus/cybt_shared_bus.c
++++ b/src/rp2_common/pico_cyw43_driver/cybt_shared_bus/cybt_shared_bus.c
+@@ -347,10 +347,10 @@ int cyw43_btbus_write(uint8_t *buf, uint32_t size) {
+     cybt_debug("cyw43_btbus_write: %d\n", cmd_len);
+     DUMP_BYTES(buf, size); // dump header and data
+ 
+-    cybt_hci_write_buf(buf, size);
++    cybt_result_t result = cybt_hci_write_buf(buf, size);
+     cybt_bus_release();
+ 
+-    return 0;
++    return result;
+ }
+ 
+ static bool cybt_hci_read_packet(uint8_t *buf, uint32_t max_buf_size, uint32_t *size) {

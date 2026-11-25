@@ -25,6 +25,15 @@ support is therefore not claimed.
 
 ## Build
 
+The dongle requires `patches/pico-sdk-cybt-propagate-write-errors.patch`
+applied to `.tools/pico-sdk`. Stock Pico SDK `cyw43_btbus_write()` always
+returns 0, which hides controller write failures. `build.ps1` refuses to build
+against an unpatched SDK.
+
+```powershell
+git -C ..\.tools\pico-sdk apply ..\..\patches\pico-sdk-cybt-propagate-write-errors.patch
+```
+
 ```powershell
 cd .\hardware-test
 .\build.ps1 -Dongle
@@ -45,6 +54,23 @@ The CYW43-controlled onboard LED emits 35 ms traffic pulses separated by a
 minimum 35 ms dark interval. Commands, events and ACL traffic all count as
 activity, so sustained A2DP produces a visible blink rather than a solid LED.
 
+## Controller write flow control
+
+Host commands and ACL packets are queued and written to the controller's
+4 KiB host-to-BT shared-bus ring. `CYBT_ERR_QUEUE_FULL` leaves the packet at
+the queue head and retries it on the next loop pass. Any other write error
+drops that packet and increments `errors`, so one failed packet cannot block
+the bridge.
+
+`status` prints a second line:
+
+```text
+FLOW backpressure=<stall episodes> host_cmd_q=<n> host_acl_q=<n> dev_evt_q=<n> dev_acl_q=<n>
+```
+
+`backpressure` counts stall episodes (transitions into a full ring), not
+individual retries.
+
 ## Live validation
 
 The adapter enumerated with Status OK alongside the Microsoft Bluetooth and
@@ -64,3 +90,23 @@ acl_host=1100/1100 evt=644/644 acl_dev=48/48 drops=0 errors=0
 All 903 additional outbound ACL packets reached the controller. No queue drop
 or controller transport error occurred. Windows reported both RACE TX10 AVRCP
 transports and the stereo Headphones endpoint as Status OK.
+
+That run predates the SDK write-error patch, so `errors=0` could not observe
+shared-bus write failures. With the patch and backpressure handling, a
+15-second 660 Hz stereo stream to the same endpoint moved the counters from:
+
+```text
+cmd=69/69 acl_host=60/60 evt=119/119 acl_dev=54/54 drops=0 errors=0
+FLOW backpressure=0 host_cmd_q=0 host_acl_q=0 dev_evt_q=0 dev_acl_q=0
+```
+
+to:
+
+```text
+cmd=72/72 acl_host=760/760 evt=476/476 acl_dev=56/56 drops=0 errors=0
+FLOW backpressure=0 host_cmd_q=0 host_acl_q=0 dev_evt_q=0 dev_acl_q=0
+```
+
+All 700 additional ACL packets were accepted by the controller with real
+error reporting enabled. Windows HCI flow control kept the controller ring
+from filling, so the `CYBT_ERR_QUEUE_FULL` retry path was not exercised.
