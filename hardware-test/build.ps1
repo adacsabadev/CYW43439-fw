@@ -3,6 +3,7 @@ param(
     [string]$PicotoolPath = '',
     [string]$PioasmPath = '',
     [switch]$Experimental0071,
+    [switch]$Hybrid0071,
     [switch]$Dongle
 )
 
@@ -19,14 +20,21 @@ if ($Dongle) {
     $Target = 'cyw43439_usb_dongle'
 }
 $FirmwareDir = ''
-if ($Experimental0071) {
-    $BuildFlavor = if ($Dongle) { 'dongle-experimental-0071' } else { 'experimental-0071' }
-    $FirmwareDir = Join-Path $RepoRoot 'generated\pico-0071'
+if ($Experimental0071 -and $Hybrid0071) { throw 'Choose either -Experimental0071 or -Hybrid0071' }
+if ($Experimental0071 -or $Hybrid0071) {
+    $Variant = if ($Hybrid0071) { 'hybrid-0071' } else { 'experimental-0071' }
+    $BuildFlavor = if ($Dongle) { "dongle-$Variant" } else { $Variant }
+    $FirmwareDir = if ($Hybrid0071) { Join-Path $RepoRoot 'generated\pico-0071-hybrid' }
+                   else { Join-Path $RepoRoot 'generated\pico-0071' }
     $Converter = Join-Path $RepoRoot 'tools\convert_hcd_to_pico.py'
-    & python $Converter `
-        --hcd (Join-Path $RepoRoot 'firmware\CYW4343A2_001.003.016.0071.0017.1YN.hcd') `
-        --activation-template (Join-Path $RepoRoot 'firmware\cyw43_btfw_43439_0065_pico.h') `
-        --output (Join-Path $FirmwareDir 'cyw43_btfw_43439.h')
+    $ConverterArgs = @(
+        $Converter,
+        '--hcd', (Join-Path $RepoRoot 'firmware\CYW4343A2_001.003.016.0071.0017.1YN.hcd'),
+        '--activation-template', (Join-Path $RepoRoot 'firmware\cyw43_btfw_43439_0065_pico.h'),
+        '--output', (Join-Path $FirmwareDir 'cyw43_btfw_43439.h')
+    )
+    if ($Hybrid0071) { $ConverterArgs += '--config-from-template' }
+    & python @ConverterArgs
     if ($LASTEXITCODE -ne 0) { throw 'Experimental firmware conversion failed' }
 }
 $BuildDir = Join-Path $ProjectRoot ("build\" + $BuildFlavor)

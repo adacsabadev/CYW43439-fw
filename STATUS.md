@@ -54,6 +54,26 @@ images. The result builds successfully, but has not been hardware-tested.
 5. Import the two `0x000d0200` binaries into Ghidra as ARM little-endian Cortex-M
    Thumb images when a project-local Ghidra distribution is installed.
 
+## Config section structure (established 2026-11-25)
+
+`BRCMcfgS`/`BRCMcfgD` layout: 8-byte magic, 4 zero bytes, little-endian u32
+body length, then TLV entries `[u16 id LE][u8 len][value]` terminated by
+`0xFE`. `BRCMcfgD` additionally carries a 64-byte trailing signature
+(`dl_signed` in the `.0065` version string).
+
+- cfgS entry `0x0300`: default BD_ADDR (the only cfgS difference between
+  images).
+- cfgD entry `0x0303`: build identifier — `SDIO 37_4M wlbga_BU RPI` in `.0065`
+  versus `UART 4343A2 wlbga_BU Murata Type-1YN-0071` in `.0071`.
+- cfgD tail entries `0x0133` (40 bytes each): per-chunk patch descriptors
+  `[u32 address][u32 length][SHA-256]` matching the exact download chunk
+  layout (251-byte chunks in `.0065`, 240-byte in the `.0071` HCD).
+
+Tools: `tools/parse_config.py` (TLV parse/diff, best-effort for large
+entries), `tools/patch_container_byte.py` (single-byte container tamper),
+`convert_hcd_to_pico.py --config-from-template` (hybrid builder, also exposed
+as `hardware-test/build.ps1 -Hybrid0071`).
+
 ## Hardware boundary
 
 On 2026-11-25 the RP2350 was recovered through ROM BOOTSEL and flashed with the
@@ -75,8 +95,23 @@ Reset write returned `180` (`0xB4`, `CYBT_ERR_HCI_INIT_FAILED`) with no event:
 STATUS radio_init=0 radio=OK hci_write=180 hci_reset=FAIL event_len=0 event=
 ```
 
-The board was restored to stock `.0065` and reconfirmed passing. This narrows
-the `.0071` problem to shared-bus runtime initialization/configuration rather
-than RP2350 boot, USB, the HCD address translation, or a permanently damaged
-board. The UART-specific `BRCMcfgD` is the primary current suspect, not yet a
-proven cause.
+The board was restored to stock `.0065` and reconfirmed passing. This narrowed the `.0071` problem to shared-bus runtime
+initialization/configuration rather than RP2350 boot, USB, the HCD address
+translation, or a permanently damaged board.
+
+Two follow-up experiments on 2026-11-25 resolved the cause (details in
+`hardware-test/RESULTS.md`):
+
+1. A hybrid image (`.0071` patch + byte-identical `.0065` config sections)
+   failed identically, ruling out plain config substitution.
+2. A single-byte tamper inside the signed `BRCMcfgD` body of the known-good
+   `.0065` image reproduced the identical failure, proving the BT firmware
+   verifies the cfgD signature before signalling shared-bus readiness.
+
+Conclusion: the `.0071` HCD-to-shared-bus port is blocked by firmware
+signature enforcement. `BRCMcfgD` is signed over a body that both names the
+transport (`UART` vs `SDIO`) and hash-binds the exact patch chunk layout, so
+no locally modified combination of `.0071` code and shared-bus configuration
+can pass verification without the vendor signing key. The practical paths to
+SCO/eSCO support are a vendor-signed shared-bus `.0071` image, or host-side
+workarounds that avoid controller SCO entirely.

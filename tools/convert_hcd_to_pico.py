@@ -45,7 +45,13 @@ def record(address: int, kind: int, payload: bytes) -> bytes:
     return bytes([len(payload)]) + address.to_bytes(2, "big") + bytes([kind]) + payload
 
 
-def make_container(hcd: dict, template: dict, version: str) -> tuple[bytes, list[tuple[int, bytes]]]:
+CONFIG_BASE = 0x21E000
+CONFIG_LIMIT = 0x220000
+
+
+def make_container(
+    hcd: dict, template: dict, version: str, config_from_template: bool
+) -> tuple[bytes, list[tuple[int, bytes]], list[tuple[int, bytes]]]:
     hcd_writes = [
         (command["write_address"], bytes.fromhex(command["write_data_hex"]))
         for command in hcd["commands"]
@@ -65,9 +71,35 @@ def make_container(hcd: dict, template: dict, version: str) -> tuple[bytes, list
     ]:
         raise ValueError(f"unexpected activation template: {activation!r}")
 
+    if config_from_template:
+        # Hybrid: keep the HCD executable patch but take both BRCMcfgS/BRCMcfgD
+        # sections from the shared-bus template, replacing the HCD's
+        # UART-transport configuration at its original position in the stream.
+        template_config = [
+            (address, data)
+            for address, data in template_writes
+            if CONFIG_BASE <= address < CONFIG_LIMIT
+        ]
+        if not template_config:
+            raise ValueError("template contains no config-region writes")
+        writes = []
+        replaced = False
+        for address, data in hcd_writes:
+            if CONFIG_BASE <= address < CONFIG_LIMIT:
+                if not replaced:
+                    writes.extend(template_config)
+                    replaced = True
+                continue
+            writes.append((address, data))
+        if not replaced:
+            raise ValueError("HCD contains no config-region writes to replace")
+        writes.extend(activation)
+    else:
+        writes = hcd_writes + activation
+
     records = []
     current_high = None
-    for address, payload in hcd_writes + activation:
+    for address, payload in writes:
         high = address >> 16
         if high != current_high:
             records.append(record(0, 4, high.to_bytes(2, "big")))
@@ -81,7 +113,7 @@ def make_container(hcd: dict, template: dict, version: str) -> tuple[bytes, list
     if len(version_bytes) > 255:
         raise ValueError("version string is too long")
     container = bytes([len(version_bytes)]) + version_bytes + bytes([len(records)]) + b"".join(records)
-    return container, activation
+    return container, activation, writes
 
 
 def render_header(container: bytes) -> str:
@@ -112,30 +144,41 @@ def main() -> None:
     parser.add_argument("--activation-template", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
-        "--version",
-        default="CYW4343A2_001.003.016.0071.0017_Murata_1YN_HCD_to_SDIO_EXPERIMENTAL",
+        "--config-from-template",
+        action="store_true",
+        help="replace the HCD BRCMcfgS/BRCMcfgD writes with the template's shared-bus config sections",
     )
+    parser.add_argument("--version", default=None)
     args = parser.parse_args()
+    if args.version is None:
+        args.version = (
+            "CYW4343A2_001.003.016.0071.0017_Murata_1YN_HCD_to_SDIO_HYBRID_0065_CFG"
+            if args.config_from_template
+            else "CYW4343A2_001.003.016.0071.0017_Murata_1YN_HCD_to_SDIO_EXPERIMENTAL"
+        )
 
     hcd = parse_hcd(args.hcd.read_bytes())
     template = parse_pico(extract_c_array(args.activation_template))
-    container, activation = make_container(hcd, template, args.version)
+    container, activation, expected = make_container(
+        hcd, template, args.version, args.config_from_template
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(render_header(container), encoding="utf-8", newline="\n")
 
-    # Round-trip validation: converted writes must be byte-identical to the HCD,
-    # followed only by the two explicitly reported activation writes.
+    # Round-trip validation: the generated records must resolve to exactly the
+    # write list the container was built from.
     generated = parse_pico(extract_c_array(args.output))
     actual = resolved_writes(generated)
-    expected = [
-        (command["write_address"], bytes.fromhex(command["write_data_hex"]))
-        for command in hcd["commands"]
-        if command["opcode"] == "0xfc4c"
-    ] + activation
     if actual != expected:
         raise RuntimeError("round-trip validation failed")
     print(f"generated {args.output} ({len(container)} bytes, {generated['record_count']} records)")
-    print("validated 29 HCD writes byte-for-byte plus 2 known Pico activation writes")
+    patch_writes = sum(1 for address, _ in expected if address < CONFIG_BASE and address >> 16 != 0x20)
+    config_writes = sum(1 for address, _ in expected if CONFIG_BASE <= address < CONFIG_LIMIT)
+    source = "template (.0065 shared-bus)" if args.config_from_template else "HCD"
+    print(
+        f"validated {patch_writes} patch writes from HCD, {config_writes} config writes from {source},"
+        f" plus {len(activation)} known Pico activation writes"
+    )
 
 
 if __name__ == "__main__":

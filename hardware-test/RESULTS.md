@@ -123,3 +123,47 @@ traffic with the Windows host:
 STATUS radio=OK usb=1 cmd=70/70 acl_host=44/44 evt=104/104 acl_dev=43/43 drops=0 errors=0
 FLOW backpressure=0 host_cmd_q=0 host_acl_q=0 dev_evt_q=0 dev_acl_q=0
 ```
+
+## Hybrid `.0071` patch + `.0065` config
+
+Test date: 2026-11-25, same board. `build.ps1 -Hybrid0071` builds the `.0071`
+executable patch combined with the byte-identical `.0065` `BRCMcfgS`/`BRCMcfgD`
+sections (verified segment-for-segment against the extracted `.0065` binaries,
+including the 64-byte cfgD trailer). Result: identical failure.
+
+```text
+STATUS radio_init=0 radio=OK hci_write=180 hci_reset=FAIL event_len=0 event=
+```
+
+UF2: `build/hybrid-0071/cyw43439_pico_test.uf2`
+
+SHA-256: `68F08A2A92499A927EA2E37027006B246C9AC75C1E8E2E65CD793BDBC711EC59`
+
+This falsified the plain "swap in shared-bus config" hypothesis and pointed at
+the `BRCMcfgD` tail entries, which decode as per-chunk patch descriptors
+`[u32 address][u32 length][SHA-256]` bound to the exact download chunking.
+
+## One-byte `BRCMcfgD` tamper test on `.0065`
+
+`tools/patch_container_byte.py` changed exactly one byte of the known-good
+`.0065` image, inside the cfgD build-identifier string (`RPI` to `RPJ`,
+container offset 0xC0). Everything else, including record framing, chunking
+and the patch, stayed byte-identical. Result: the previously passing image now
+fails exactly like the `.0071` conversions:
+
+```text
+STATUS radio_init=0 radio=OK hci_write=180 hci_reset=FAIL event_len=0 event=
+```
+
+UF2: `build/tamper-0065/cyw43439_pico_test.uf2`
+
+Conclusion: the CYW43439 BT firmware verifies the `BRCMcfgD` body against its
+64-byte trailing signature before signalling shared-bus readiness. Any locally
+modified configuration section is rejected, so spliced or re-signed configs are
+not achievable without the vendor signing key.
+
+## Final board state
+
+The stock `.0065` dongle baseline was restored and verified live after the
+hybrid and tamper experiments: Generic Bluetooth Adapter Status OK, CDC on
+COM17, active HCI traffic with the Windows host, `drops=0 errors=0`.
