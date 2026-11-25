@@ -93,3 +93,33 @@ Checked-in baseline UF2: `hardware-test/firmware/cyw43439_usb_dongle_stock_0065.
 SHA-256:
 
 `5FCF37645BB391533F08F33FC9B071F965DB5CADFFB34CDEAFEEBED91FEA04FD`
+
+## Converted Murata `.0071` retest (radio-fw-0071 rebuild)
+
+Test date: 2026-11-25, same board (`61EDF42ACD25F7A0`). The `.0071` test image
+was rebuilt from a clean checkout on branch `radio-fw-0071` and flashed via
+`picotool load -x`. USB CDC enumerated as COM16. The result reproduces the
+original failure exactly, including after a manual `hci-reset` retry:
+
+```text
+STATUS radio_init=0 radio=OK hci_write=180 hci_reset=FAIL event_len=0 event=
+HCI_RESET sent result=180
+```
+
+This confirms the failure is deterministic and not a build or flash artifact.
+The shared-bus HCI bring-up suspect (`BRCMcfgD` UART transport configuration)
+remains unchanged.
+
+UF2: `build/experimental-0071/cyw43439_pico_test.uf2`
+
+SHA-256: `1251EED9332C9C0247C4BD529CD5E4C44AC1EA770258D1C38CE94F7B730B53FD`
+
+The board was then restored to the checked-in stock `.0065` dongle baseline
+(`firmware/cyw43439_usb_dongle_stock_0065.uf2`). It re-enumerated as the
+Generic Bluetooth Adapter with CDC on COM17 and immediately resumed live HCI
+traffic with the Windows host:
+
+```text
+STATUS radio=OK usb=1 cmd=70/70 acl_host=44/44 evt=104/104 acl_dev=43/43 drops=0 errors=0
+FLOW backpressure=0 host_cmd_q=0 host_acl_q=0 dev_evt_q=0 dev_acl_q=0
+```
