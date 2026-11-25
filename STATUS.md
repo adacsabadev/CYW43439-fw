@@ -56,6 +56,27 @@ images. The result builds successfully, but has not been hardware-tested.
 
 ## Hardware boundary
 
-No `.0071` image has been flashed. The Pico was unavailable because the dongle
-work damaged its current boot/power behavior. Static work does not depend on
-the board and can proceed independently.
+On 2026-11-25 the RP2350 was recovered through ROM BOOTSEL and flashed with the
+independent `hardware-test` stock `.0065` image. Windows enumerated USB CDC as
+COM16. Live output proved both CYW43 initialization and controller HCI:
+
+```text
+STATUS radio_init=0 radio=OK hci_write=0 hci_reset=PASS event_len=6 event=0e0401030c00
+```
+
+This establishes a known-good recovery baseline independent of the dongle
+application.
+
+The converted `.0071` image was then tested with the identical application.
+USB CDC enumerated, and `cyw43_arch_init()` returned zero, but the first HCI
+Reset write returned `180` (`0xB4`, `CYBT_ERR_HCI_INIT_FAILED`) with no event:
+
+```text
+STATUS radio_init=0 radio=OK hci_write=180 hci_reset=FAIL event_len=0 event=
+```
+
+The board was restored to stock `.0065` and reconfirmed passing. This narrows
+the `.0071` problem to shared-bus runtime initialization/configuration rather
+than RP2350 boot, USB, the HCD address translation, or a permanently damaged
+board. The UART-specific `BRCMcfgD` is the primary current suspect, not yet a
+proven cause.

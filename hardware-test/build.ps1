@@ -1,12 +1,29 @@
 param(
-    [string]$SdkPath = 'E:\VSCODE_COPILOT_Root_New\rpi-pico2\.tools\pico-sdk',
-    [string]$PicotoolPath = 'E:\VSCODE_COPILOT_Root_New\rpi-pico2\.tools\picotool',
-    [string]$PioasmPath = 'E:\VSCODE_COPILOT_Root_New\rpi-pico2\.tools\pico-sdk-tools\pioasm'
+    [string]$SdkPath = '',
+    [string]$PicotoolPath = '',
+    [string]$PioasmPath = '',
+    [switch]$Experimental0071
 )
 
 $ErrorActionPreference = 'Stop'
 $ProjectRoot = $PSScriptRoot
-$BuildDir = Join-Path $ProjectRoot 'build\stock-0065'
+$RepoRoot = Split-Path -Parent $ProjectRoot
+if (-not $SdkPath) { $SdkPath = Join-Path $RepoRoot '.tools\pico-sdk' }
+if (-not $PicotoolPath) { $PicotoolPath = Join-Path $RepoRoot '.tools\picotool' }
+if (-not $PioasmPath) { $PioasmPath = Join-Path $RepoRoot '.tools\pico-sdk-tools\pioasm' }
+$BuildFlavor = 'stock-0065'
+$FirmwareDir = ''
+if ($Experimental0071) {
+    $BuildFlavor = 'experimental-0071'
+    $FirmwareDir = Join-Path $RepoRoot 'generated\pico-0071'
+    $Converter = Join-Path $RepoRoot 'tools\convert_hcd_to_pico.py'
+    & python $Converter `
+        --hcd (Join-Path $RepoRoot 'firmware\CYW4343A2_001.003.016.0071.0017.1YN.hcd') `
+        --activation-template (Join-Path $RepoRoot 'firmware\cyw43_btfw_43439_0065_pico.h') `
+        --output (Join-Path $FirmwareDir 'cyw43_btfw_43439.h')
+    if ($LASTEXITCODE -ne 0) { throw 'Experimental firmware conversion failed' }
+}
+$BuildDir = Join-Path $ProjectRoot ("build\" + $BuildFlavor)
 
 foreach ($required in @(
     (Join-Path $SdkPath 'external\pico_sdk_import.cmake'),
@@ -22,6 +39,7 @@ cmake -S $ProjectRoot -B $BuildDir -G Ninja `
     -DPICOTOOL_FETCH_FROM_GIT_PATH="$PicotoolPath" `
     -Dpioasm_DIR="$PioasmPath" `
     -DPICO_BOARD=pico2_w `
+    -DTEST_BT_FIRMWARE_DIR="$FirmwareDir" `
     -DCMAKE_BUILD_TYPE=Release
 if ($LASTEXITCODE -ne 0) { throw "CMake configure failed: $LASTEXITCODE" }
 

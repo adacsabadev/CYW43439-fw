@@ -12,6 +12,12 @@
 #define HCI_PACKET_COMMAND 0x01u
 #define HCI_PACKET_EVENT 0x04u
 
+#ifdef TEST_FIRMWARE_0071
+#define TEST_FIRMWARE_LABEL "experimental-converted-0071"
+#else
+#define TEST_FIRMWARE_LABEL "stock-sdk-0065"
+#endif
+
 static volatile bool hci_work_pending;
 static bool radio_initialized;
 static bool hci_reset_passed;
@@ -122,7 +128,7 @@ int main(void) {
     stdio_init_all();
     sleep_ms(1500);
     printf("\r\nCYW43439 PICO2W TEST v1\r\n");
-    printf("BOOT rp2350 firmware=stock-sdk-0065\r\n");
+    printf("BOOT rp2350 firmware=%s\r\n", TEST_FIRMWARE_LABEL);
 
     radio_init_result = cyw43_arch_init();
     radio_initialized = radio_init_result == 0;
