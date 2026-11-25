@@ -87,8 +87,8 @@ STATUS radio=OK usb=1 cmd=72/72 acl_host=760/760 evt=476/476 acl_dev=56/56 drops
 FLOW backpressure=0 host_cmd_q=0 host_acl_q=0 dev_evt_q=0 dev_acl_q=0
 ```
 
-UF2: `build/dongle-stock-0065/cyw43439_usb_dongle.uf2` (the earlier image
-remains in `build/dongle-stock-0065.pre-backpressure/`)
+Checked-in baseline UF2: `hardware-test/firmware/cyw43439_usb_dongle_stock_0065.uf2`
+(the earlier image remains in `build/dongle-stock-0065.pre-backpressure/`)
 
 SHA-256:
 

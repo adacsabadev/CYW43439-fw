@@ -43,6 +43,12 @@ Output:
 
 `build/dongle-stock-0065/cyw43439_usb_dongle.uf2`
 
+The checked-in, hardware-validated `.0065` baseline UF2 is
+`hardware-test/firmware/cyw43439_usb_dongle_stock_0065.uf2` (SHA-256
+`5FCF37645BB391533F08F33FC9B071F965DB5CADFFB34CDEAFEEBED91FEA04FD`).
+This preserves a directly flashable baseline independently of the ignored
+build directory.
+
 ## Interfaces
 
 - USB Bluetooth HCI class: Windows `Generic Bluetooth Adapter`
