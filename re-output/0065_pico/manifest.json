@@ -1,0 +1,323 @@
+{
+  "image": "0065_pico",
+  "segments": [
+    {
+      "index": 0,
+      "address": 2220032,
+      "end_address_exclusive": 2220098,
+      "length": 66,
+      "classification": "static_config",
+      "sha256": "2c99b1d58afd397752f9a194ee28c05a43a00848b62f0e6af5a372464cdb5990",
+      "file": "00_0021e000_static_config.bin",
+      "strings": [
+        {
+          "offset": 0,
+          "text": "BRCMcfgS"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "address": 2224128,
+      "end_address_exclusive": 2227328,
+      "length": 3200,
+      "classification": "dynamic_config",
+      "sha256": "fbe4b662c892a97544704fe4e06eab5d8ce40ed1e8bf5012e278954e92647ec4",
+      "file": "01_0021f000_dynamic_config.bin",
+      "strings": [
+        {
+          "offset": 0,
+          "text": "BRCMcfgD"
+        },
+        {
+          "offset": 19,
+          "text": "SDIO 37_4M wlbga_BU RPI"
+        },
+        {
+          "offset": 547,
+          "text": "#<Zn}"
+        },
+        {
+          "offset": 813,
+          "text": "E=4/.83-*'"
+        },
+        {
+          "offset": 841,
+          "text": "NJ=97@:3.-"
+        },
+        {
+          "offset": 869,
+          "text": "_XMGCKE=75"
+        },
+        {
+          "offset": 897,
+          "text": "mjYSRWQG@>"
+        },
+        {
+          "offset": 926,
+          "text": "yh`]aZPHF"
+        },
+        {
+          "offset": 955,
+          "text": "xokoeYQO"
+        },
+        {
+          "offset": 988,
+          "text": "#<Zn}"
+        },
+        {
+          "offset": 1254,
+          "text": "E=4/.83-*'"
+        },
+        {
+          "offset": 1282,
+          "text": "NJ=97@:3.-"
+        },
+        {
+          "offset": 1310,
+          "text": "_XMGCKE=75"
+        },
+        {
+          "offset": 1338,
+          "text": "mjYSRWQG@>"
+        },
+        {
+          "offset": 1367,
+          "text": "yh`]aZPHF"
+        },
+        {
+          "offset": 1396,
+          "text": "xokoeYQO"
+        },
+        {
+          "offset": 1522,
+          "text": "E=4/.NJ=97_XMGCmjYSR"
+        },
+        {
+          "offset": 1543,
+          "text": "yh`]"
+        },
+        {
+          "offset": 1652,
+          "text": "E=4/.NJ=97_XMGCmjYSR"
+        },
+        {
+          "offset": 1673,
+          "text": "yh`]"
+        },
+        {
+          "offset": 2451,
+          "text": "sU|0"
+        },
+        {
+          "offset": 2627,
+          "text": "~)4U]I8"
+        },
+        {
+          "offset": 2817,
+          "text": "vV.b3"
+        },
+        {
+          "offset": 2866,
+          "text": "(dA "
+        },
+        {
+          "offset": 2875,
+          "text": "~8SUe"
+        },
+        {
+          "offset": 3076,
+          "text": "eYS3"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "address": 852480,
+      "end_address_exclusive": 855952,
+      "length": 3472,
+      "classification": "thumb_patch",
+      "sha256": "d9a12cb202ca648236e494b327e2d00720ade5507395a1a7fb7840db6ad586d5",
+      "file": "02_000d0200_thumb_patch.bin",
+      "strings": [
+        {
+          "offset": 104,
+          "text": "(F1F"
+        },
+        {
+          "offset": 220,
+          "text": "$1A`<1"
+        },
+        {
+          "offset": 409,
+          "text": "`diL`"
+        },
+        {
+          "offset": 437,
+          "text": " pG8"
+        },
+        {
+          "offset": 641,
+          "text": "a Fv"
+        },
+        {
+          "offset": 731,
+          "text": "!0Fr"
+        },
+        {
+          "offset": 779,
+          "text": "L h{"
+        },
+        {
+          "offset": 801,
+          "text": " !hHaO"
+        },
+        {
+          "offset": 985,
+          "text": "2Tv|"
+        },
+        {
+          "offset": 1006,
+          "text": ",FnF0]F"
+        },
+        {
+          "offset": 1065,
+          "text": "!8F}"
+        },
+        {
+          "offset": 1593,
+          "text": "1 FI"
+        },
+        {
+          "offset": 1674,
+          "text": "YF F"
+        },
+        {
+          "offset": 1820,
+          "text": "`p x"
+        },
+        {
+          "offset": 1847,
+          "text": "\"@Fg"
+        },
+        {
+          "offset": 1899,
+          "text": "Q9C-"
+        },
+        {
+          "offset": 1986,
+          "text": "1F(FU"
+        },
+        {
+          "offset": 2034,
+          "text": "d08Fc"
+        },
+        {
+          "offset": 2080,
+          "text": "fHgI"
+        },
+        {
+          "offset": 2122,
+          "text": "1F Fg"
+        },
+        {
+          "offset": 2132,
+          "text": "1F F"
+        },
+        {
+          "offset": 2168,
+          "text": " xVI"
+        },
+        {
+          "offset": 2180,
+          "text": "1F Fo"
+        },
+        {
+          "offset": 2414,
+          "text": "`r(FP"
+        },
+        {
+          "offset": 2431,
+          "text": "&5F(F?"
+        },
+        {
+          "offset": 2531,
+          "text": "F  G"
+        },
+        {
+          "offset": 2763,
+          "text": "+QFPFO"
+        },
+        {
+          "offset": 2897,
+          "text": "!0F8"
+        },
+        {
+          "offset": 2948,
+          "text": "QF0F8"
+        },
+        {
+          "offset": 2966,
+          "text": "YF0F8"
+        },
+        {
+          "offset": 2976,
+          "text": "9F0F8"
+        },
+        {
+          "offset": 3008,
+          "text": "0 Pqp"
+        },
+        {
+          "offset": 3025,
+          "text": " `qp"
+        },
+        {
+          "offset": 3038,
+          "text": "5\",H"
+        },
+        {
+          "offset": 3046,
+          "text": "+IHyo"
+        },
+        {
+          "offset": 3054,
+          "text": "*HCxb"
+        },
+        {
+          "offset": 3070,
+          "text": "0  p"
+        },
+        {
+          "offset": 3075,
+          "text": "h%H':"
+        },
+        {
+          "offset": 3090,
+          "text": "'+/37;"
+        }
+      ],
+      "disassembly": "02_000d0200_thumb_patch.thumb.lst"
+    },
+    {
+      "index": 3,
+      "address": 2111700,
+      "end_address_exclusive": 2111704,
+      "length": 4,
+      "classification": "activation",
+      "sha256": "9752dbb959d35f5a8460e36490dd372dca5927da020f99a6357dbb2c902c0135",
+      "file": "03_002038d4_activation.bin",
+      "strings": []
+    },
+    {
+      "index": 4,
+      "address": 2113892,
+      "end_address_exclusive": 2113896,
+      "length": 4,
+      "classification": "activation",
+      "sha256": "3022cf6459878406b60fec639cdefae380a3fa880981546680fe7cf2d1c84142",
+      "file": "04_00204164_activation.bin",
+      "strings": []
+    }
+  ]
+}

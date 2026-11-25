@@ -1,0 +1,299 @@
+{
+  "image": "0071_murata",
+  "segments": [
+    {
+      "index": 0,
+      "address": 2220032,
+      "end_address_exclusive": 2220098,
+      "length": 66,
+      "classification": "static_config",
+      "sha256": "6036587298cea552e52a8a67f279b1ec2522dffd2f0b5afeec9860f839b99861",
+      "file": "00_0021e000_static_config.bin",
+      "strings": [
+        {
+          "offset": 0,
+          "text": "BRCMcfgS"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "address": 2224128,
+      "end_address_exclusive": 2227359,
+      "length": 3231,
+      "classification": "dynamic_config",
+      "sha256": "3a0beec120dc56e93e344470307a04ada79ace4a9404c6437e6df68d1c63144d",
+      "file": "01_0021f000_dynamic_config.bin",
+      "strings": [
+        {
+          "offset": 0,
+          "text": "BRCMcfgD"
+        },
+        {
+          "offset": 18,
+          "text": "*UART 4343A2 wlbga_BU Murata Type-1YN-0071"
+        },
+        {
+          "offset": 620,
+          "text": "#<Zn}"
+        },
+        {
+          "offset": 886,
+          "text": "E=4/.83-*'"
+        },
+        {
+          "offset": 914,
+          "text": "NJ=97@:3.-"
+        },
+        {
+          "offset": 942,
+          "text": "_XMGCKE=75"
+        },
+        {
+          "offset": 970,
+          "text": "mjYSRWQG@>"
+        },
+        {
+          "offset": 999,
+          "text": "yh`]aZPHF"
+        },
+        {
+          "offset": 1028,
+          "text": "xokoeYQO"
+        },
+        {
+          "offset": 1061,
+          "text": "#<Zn}"
+        },
+        {
+          "offset": 1327,
+          "text": "E=4/.83-*'"
+        },
+        {
+          "offset": 1355,
+          "text": "NJ=97@:3.-"
+        },
+        {
+          "offset": 1383,
+          "text": "_XMGCKE=75"
+        },
+        {
+          "offset": 1411,
+          "text": "mjYSRWQG@>"
+        },
+        {
+          "offset": 1440,
+          "text": "yh`]aZPHF"
+        },
+        {
+          "offset": 1469,
+          "text": "xokoeYQO"
+        },
+        {
+          "offset": 1595,
+          "text": "E=4/.NJ=97_XMGCmjYSR"
+        },
+        {
+          "offset": 1616,
+          "text": "yh`]"
+        },
+        {
+          "offset": 1725,
+          "text": "E=4/.NJ=97_XMGCmjYSR"
+        },
+        {
+          "offset": 1746,
+          "text": "yh`]"
+        },
+        {
+          "offset": 2595,
+          "text": ".r;3"
+        },
+        {
+          "offset": 2874,
+          "text": "X{I_V2n"
+        },
+        {
+          "offset": 2910,
+          "text": "'M+<k"
+        },
+        {
+          "offset": 2937,
+          "text": "qZkt?3"
+        },
+        {
+          "offset": 3221,
+          "text": "zZ*b"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "address": 852480,
+      "end_address_exclusive": 855952,
+      "length": 3472,
+      "classification": "thumb_patch",
+      "sha256": "3f4f7fc22bbbf20a23444e17ac9ff9077b39708592610a49c09b6ca3223b529a",
+      "file": "02_000d0200_thumb_patch.bin",
+      "strings": [
+        {
+          "offset": 104,
+          "text": "(F1F"
+        },
+        {
+          "offset": 171,
+          "text": "$ Fp"
+        },
+        {
+          "offset": 232,
+          "text": "$1A`<1"
+        },
+        {
+          "offset": 461,
+          "text": " pG8"
+        },
+        {
+          "offset": 665,
+          "text": "a Fv"
+        },
+        {
+          "offset": 755,
+          "text": "!0Fr"
+        },
+        {
+          "offset": 803,
+          "text": "L h{"
+        },
+        {
+          "offset": 825,
+          "text": " !hHaO"
+        },
+        {
+          "offset": 1009,
+          "text": "2Tv|"
+        },
+        {
+          "offset": 1030,
+          "text": ",FnF0]F"
+        },
+        {
+          "offset": 1089,
+          "text": "!8F}"
+        },
+        {
+          "offset": 1617,
+          "text": "1 FI"
+        },
+        {
+          "offset": 1698,
+          "text": "YF F"
+        },
+        {
+          "offset": 1844,
+          "text": "`p x"
+        },
+        {
+          "offset": 1871,
+          "text": "\"@Fg"
+        },
+        {
+          "offset": 1923,
+          "text": "Q9C-"
+        },
+        {
+          "offset": 2010,
+          "text": "1F(FU"
+        },
+        {
+          "offset": 2058,
+          "text": "d08Fc"
+        },
+        {
+          "offset": 2104,
+          "text": "fHgI"
+        },
+        {
+          "offset": 2146,
+          "text": "1F Fg"
+        },
+        {
+          "offset": 2156,
+          "text": "1F F"
+        },
+        {
+          "offset": 2192,
+          "text": " xVI"
+        },
+        {
+          "offset": 2204,
+          "text": "1F Fo"
+        },
+        {
+          "offset": 2438,
+          "text": "`r(FP"
+        },
+        {
+          "offset": 2455,
+          "text": "&5F(F?"
+        },
+        {
+          "offset": 2555,
+          "text": "F  G"
+        },
+        {
+          "offset": 2745,
+          "text": "{@{Ny"
+        },
+        {
+          "offset": 2849,
+          "text": "!(F8"
+        },
+        {
+          "offset": 2868,
+          "text": "1F(F8"
+        },
+        {
+          "offset": 2898,
+          "text": "0 Pqp"
+        },
+        {
+          "offset": 2915,
+          "text": " `qp"
+        },
+        {
+          "offset": 2955,
+          "text": "x ses` "
+        },
+        {
+          "offset": 2994,
+          "text": "5\"0H"
+        },
+        {
+          "offset": 3002,
+          "text": "/IHyo"
+        },
+        {
+          "offset": 3010,
+          "text": ".HCxb"
+        },
+        {
+          "offset": 3026,
+          "text": "0  p"
+        },
+        {
+          "offset": 3031,
+          "text": "h)H':"
+        },
+        {
+          "offset": 3046,
+          "text": "'+/37;"
+        },
+        {
+          "offset": 3291,
+          "text": "z Fh"
+        }
+      ],
+      "disassembly": "02_000d0200_thumb_patch.thumb.lst"
+    }
+  ]
+}

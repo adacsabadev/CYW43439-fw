@@ -1,0 +1,54 @@
+{
+  "0065_pico": [
+    {
+      "address": 2220032,
+      "length": 66,
+      "classification": "static_config",
+      "sha256": "2c99b1d58afd397752f9a194ee28c05a43a00848b62f0e6af5a372464cdb5990"
+    },
+    {
+      "address": 2224128,
+      "length": 3200,
+      "classification": "dynamic_config",
+      "sha256": "fbe4b662c892a97544704fe4e06eab5d8ce40ed1e8bf5012e278954e92647ec4"
+    },
+    {
+      "address": 852480,
+      "length": 3472,
+      "classification": "thumb_patch",
+      "sha256": "d9a12cb202ca648236e494b327e2d00720ade5507395a1a7fb7840db6ad586d5"
+    },
+    {
+      "address": 2111700,
+      "length": 4,
+      "classification": "activation",
+      "sha256": "9752dbb959d35f5a8460e36490dd372dca5927da020f99a6357dbb2c902c0135"
+    },
+    {
+      "address": 2113892,
+      "length": 4,
+      "classification": "activation",
+      "sha256": "3022cf6459878406b60fec639cdefae380a3fa880981546680fe7cf2d1c84142"
+    }
+  ],
+  "0071_murata": [
+    {
+      "address": 2220032,
+      "length": 66,
+      "classification": "static_config",
+      "sha256": "6036587298cea552e52a8a67f279b1ec2522dffd2f0b5afeec9860f839b99861"
+    },
+    {
+      "address": 2224128,
+      "length": 3231,
+      "classification": "dynamic_config",
+      "sha256": "3a0beec120dc56e93e344470307a04ada79ace4a9404c6437e6df68d1c63144d"
+    },
+    {
+      "address": 852480,
+      "length": 3472,
+      "classification": "thumb_patch",
+      "sha256": "3f4f7fc22bbbf20a23444e17ac9ff9077b39708592610a49c09b6ca3223b529a"
+    }
+  ]
+}
