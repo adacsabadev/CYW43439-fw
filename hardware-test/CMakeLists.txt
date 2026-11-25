@@ -29,3 +29,21 @@ endif()
 pico_enable_stdio_usb(cyw43439_pico_test 1)
 pico_enable_stdio_uart(cyw43439_pico_test 0)
 pico_add_extra_outputs(cyw43439_pico_test)
+
+add_executable(cyw43439_usb_dongle
+    dongle/main.c
+    dongle/usb_descriptors.c
+    ${PICO_SDK_PATH}/lib/tinyusb/src/class/bth/bth_device.c
+)
+target_include_directories(cyw43439_usb_dongle PRIVATE dongle)
+target_link_libraries(cyw43439_usb_dongle
+    pico_stdlib
+    pico_unique_id
+    pico_cyw43_arch_none
+    tinyusb_device
+    tinyusb_board
+)
+target_compile_definitions(cyw43439_usb_dongle PRIVATE CYW43_ENABLE_BLUETOOTH=1)
+pico_enable_stdio_usb(cyw43439_usb_dongle 0)
+pico_enable_stdio_uart(cyw43439_usb_dongle 0)
+pico_add_extra_outputs(cyw43439_usb_dongle)

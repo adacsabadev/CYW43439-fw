@@ -43,3 +43,33 @@ SHA-256: `E3CB121AC613DAD092DC1AD5CB847136AE81354E93AB09064282E9C93E47219A`
 
 The stock `.0065` recovery image was restored after the `.0071` experiment.
 COM16 again reported `CYW43_INIT PASS` and `HCI_RESET PASS`.
+
+## USB Bluetooth dongle
+
+The final stock `.0065` dongle image enumerated as:
+
+- `Generic Bluetooth Adapter`, Status OK
+- `Microsoft Bluetooth Enumerator`, Status OK
+- `Microsoft Bluetooth LE Enumerator`, Status OK
+- USB CDC diagnostics on COM17
+
+A five-second, 44.1 kHz stereo tone was sent directly to the paired RACE TX10
+A2DP waveOut endpoint after the final activity-LED change. Final counters were:
+
+```text
+STATUS radio=OK usb=1 cmd=73/73 acl_host=1100/1100 evt=646/646 acl_dev=48/48 drops=0 errors=0
+```
+
+Windows also exposed the RACE TX10 AVRCP transports and stereo Headphones
+endpoint. Pixel 7 appeared through both Classic and BLE enumeration, confirming
+that both host paths are alive. Bluetooth HID Classic and HID-over-GATT use
+those same transparent HCI/ACL paths; no separate local USB HID interface is
+needed or desirable for an adapter.
+
+Final UF2:
+
+`build/dongle-stock-0065/cyw43439_usb_dongle.uf2`
+
+SHA-256:
+
+`EDE1E710D87DAD657C1AC0451C9D8F8FB209030210CACCF748479630903570CA`

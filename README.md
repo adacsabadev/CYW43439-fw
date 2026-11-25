@@ -90,3 +90,6 @@ Serial commands:
 The firmware prints `CYW43439 PICO2W TEST v1` and a status line every five
 seconds. A working board must report both `CYW43_INIT PASS` and
 `HCI_RESET PASS`; USB enumeration alone proves only the RP2350/flash/USB path.
+
+The same project also contains the tested USB Bluetooth dongle target. See
+`hardware-test/DONGLE.md` and build it with `hardware-test/build.ps1 -Dongle`.

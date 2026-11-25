@@ -2,7 +2,8 @@ param(
     [string]$SdkPath = '',
     [string]$PicotoolPath = '',
     [string]$PioasmPath = '',
-    [switch]$Experimental0071
+    [switch]$Experimental0071,
+    [switch]$Dongle
 )
 
 $ErrorActionPreference = 'Stop'
@@ -12,9 +13,14 @@ if (-not $SdkPath) { $SdkPath = Join-Path $RepoRoot '.tools\pico-sdk' }
 if (-not $PicotoolPath) { $PicotoolPath = Join-Path $RepoRoot '.tools\picotool' }
 if (-not $PioasmPath) { $PioasmPath = Join-Path $RepoRoot '.tools\pico-sdk-tools\pioasm' }
 $BuildFlavor = 'stock-0065'
+$Target = 'cyw43439_pico_test'
+if ($Dongle) {
+    $BuildFlavor = 'dongle-stock-0065'
+    $Target = 'cyw43439_usb_dongle'
+}
 $FirmwareDir = ''
 if ($Experimental0071) {
-    $BuildFlavor = 'experimental-0071'
+    $BuildFlavor = if ($Dongle) { 'dongle-experimental-0071' } else { 'experimental-0071' }
     $FirmwareDir = Join-Path $RepoRoot 'generated\pico-0071'
     $Converter = Join-Path $RepoRoot 'tools\convert_hcd_to_pico.py'
     & python $Converter `
@@ -43,10 +49,10 @@ cmake -S $ProjectRoot -B $BuildDir -G Ninja `
     -DCMAKE_BUILD_TYPE=Release
 if ($LASTEXITCODE -ne 0) { throw "CMake configure failed: $LASTEXITCODE" }
 
-cmake --build $BuildDir
+cmake --build $BuildDir --target $Target
 if ($LASTEXITCODE -ne 0) { throw "Build failed: $LASTEXITCODE" }
 
-$Uf2 = Join-Path $BuildDir 'cyw43439_pico_test.uf2'
+$Uf2 = Join-Path $BuildDir ($Target + '.uf2')
 $Picotool = Join-Path $PicotoolPath 'picotool\picotool.exe'
 & $Picotool info -a $Uf2
 if ($LASTEXITCODE -ne 0) { throw 'picotool rejected the UF2' }
